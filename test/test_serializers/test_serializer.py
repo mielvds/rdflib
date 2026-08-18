@@ -110,7 +110,9 @@ def simple_dataset() -> Dataset:
     graph = Dataset()
     graph.default_context.add((EGSCHEME.subject, EGSCHEME.predicate, EGSCHEME.object))
     graph.default_context.add((EGURN.subject, EGURN.predicate, EGURN.object))
-    graph.default_context.add((EGDC.subject, EGDC.predicate, Literal("typeless")))
+    graph.default_context.add(
+        (EGDC.subject, EGDC.predicate, Literal("typeless", datatype=XSD.string))
+    )
     graph.get_context(EGSCHEME.graph).add(
         (EGSCHEME.subject, EGSCHEME.predicate, EGSCHEME.object)
     )
@@ -406,15 +408,6 @@ def make_serialize_parse_tests() -> Generator[ParameterSet, None, None]:
     -   rdflib.term.Literal('XSD string'),
     +   rdflib.term.Literal('XSD string', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#string')),
                         """,
-                    )
-                elif serializer_name in ("hext") and graph_type is GraphType.QUAD:
-                    xfail = pytest.mark.xfail(
-                        raises=AssertionError,
-                        reason="""
-    hext is injecting datatype:
-    -   rdflib.term.Literal('typeless', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#string')),
-    +   rdflib.term.Literal('typeless'),
-    """,
                     )
             marks = (xfail,) if xfail is not None else ()
             yield pytest.param(

@@ -6,7 +6,7 @@ from urllib.request import urlopen
 
 import pytest
 
-from rdflib import Graph, Literal, URIRef
+from rdflib import XSD, Graph, Literal, URIRef
 from rdflib.plugins.parsers import ntriples
 from test.data import TEST_DATA_DIR
 
@@ -40,6 +40,17 @@ def test_issue78():
     s = g.serialize(format="nt")
     assert type(s) == str  # noqa: E721
     assert "R\u00E4ksm\u00F6rg\u00E5s" in s
+
+
+def test_ntriples_plain_literal_parses_as_xsd_string():
+    graph = Graph()
+    graph.parse(data='<urn:s> <urn:p> "XSD string" .', format="nt")
+
+    assert (
+        URIRef("urn:s"),
+        URIRef("urn:p"),
+        Literal("XSD string", datatype=XSD.string),
+    ) in graph
 
 
 def test_issue146():

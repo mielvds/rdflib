@@ -23,6 +23,7 @@ from typing import (
 
 from rdflib.compat import _string_escape_map, decodeUnicodeEscape
 from rdflib.exceptions import ParserError as ParseError
+from rdflib.namespace import XSD
 from rdflib.parser import InputSource, Parser
 from rdflib.term import BNode as bNode
 from rdflib.term import Literal, URIRef
@@ -338,7 +339,8 @@ class W3CNTriplesParser:
                 dtype = uriquote(dtype)
                 dtype = URI(dtype)
             else:
-                dtype = None
+                # If there is no datatype IRI and no language tag it is a simple literal and the datatype is http://www.w3.org/2001/XMLSchema#string.
+                dtype = None if lang else XSD.string
             if lang and dtype:
                 raise ParseError("Can't have both a language and a datatype")
             lit = unquote(lit)
